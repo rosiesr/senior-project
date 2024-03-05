@@ -1,0 +1,27 @@
+;first stanza
+(declare-fun KnowinglyAccessesComputerWithoutAuthorization (Int) Bool)
+(declare-fun UnauthorizedAccess (Int) Bool)
+(declare-fun ExceedsAuthorizedAccess (Int) Bool)
+(declare-fun IntentionallyAccessesProtectedComputer (Int) Bool)
+(declare-fun IntentionallyAccessesComputerWithoutAuthorization (Int) Bool)
+(declare-fun AccessesNonpublicComputer (Int) Bool)
+(declare-fun ObtainsInformation (Int) Bool)
+(declare-fun ReasonToBelieveInjury (Int) Bool)
+(declare-fun WillfullyCommunicates (Int) Bool)
+(declare-fun ProtectedComputer (Int) Bool)
+
+(assert (forall ((x Int)) (=> (KnowinglyAccessesComputerWithoutAuthorization x) (and (UnauthorizedAccess x) (ObtainsInformation x)))))
+(assert (forall ((x Int)) (=> (UnauthorizedAccess x) (or (KnowinglyAccessesComputerWithoutAuthorization x) (ExceedsAuthorizedAccess x)))))
+(assert (forall ((x Int)) (=> (ExceedsAuthorizedAccess x) (exists ((y Int)) (and (AccessesNonpublicComputer y) (ExceedsAuthorizedAccess y))))))
+(assert (forall ((x Int)) (=> (IntentionallyAccessesProtectedComputer x) (and (IntentionallyAccessesComputerWithoutAuthorization x) (ProtectedComputer x)))))
+(assert (forall ((x Int)) (=> (IntentionallyAccessesComputerWithoutAuthorization x) (and (UnauthorizedAccess x) (or (AccessesNonpublicComputer x) (ProtectedComputer x))))))
+(assert (forall ((x Int)) (=> (AccessesNonpublicComputer x) (exists ((y Int)) (AccessesNonpublicComputer y)))))
+(assert (forall ((x Int)) (=> (ObtainsInformation x) (exists ((y Int)) (ObtainsInformation y)))))
+(assert (forall ((x Int)) (=> (ReasonToBelieveInjury x) (exists ((y Int)) (ReasonToBelieveInjury y)))))
+(assert (forall ((x Int)) (=> (WillfullyCommunicates x) (exists ((y Int)) (WillfullyCommunicates y)))))
+
+; Example assertion
+(assert (= (KnowinglyAccessesComputerWithoutAuthorization 1) true))
+
+(check-sat)
+(get-model)
