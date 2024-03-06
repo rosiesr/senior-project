@@ -19,6 +19,11 @@
 (declare-fun ObtainsAnythingOfValue (Int) Bool)
 (declare-fun ObjectOfFraudAndThingObtainedOnlyUseOfComputer (Int) Bool)
 (declare-fun ValueOfUseOfComputerNotMoreThan5000 (Int) Bool)
+(declare-fun CausesTransmissionWithoutAuthorization (Int) Bool)
+(declare-fun IntentionallyAccessesProtectedComputerWithoutAuthorization (Int) Bool)
+(declare-fun CausesDamage (Int) Bool)
+(declare-fun RecklesslyCausesDamage (Int) Bool)
+(declare-fun CausesDamageAndLoss (Int) Bool)
 
 (assert (forall ((x Int)) (=> (KnowinglyAccessesComputerWithoutAuthorization x) (or (ExceedsAuthorizedAccess x) (KnowinglyAccessesComputerWithoutAuthorization x)))))
 (assert (forall ((x Int)) (=> (ObtainsRestrictedInformation x) (and (InformationRequiresProtection x) (or (InformationCanBeUsedToInjureUS x) (InformationCanBeUsedToInjureForeignNation x))))))
@@ -37,6 +42,10 @@
 
 ; Section (4)
 (assert (forall ((x Int)) (=> (and (KnowinglyAccessesProtectedComputerWithIntentToDefraud x) (or (ExceedsAuthorizedAccess x) (KnowinglyAccessesComputerWithoutAuthorization x)) (FurthersIntendedFraud x)) (and (ObtainsAnythingOfValue x) (or (and (not (ObjectOfFraudAndThingObtainedOnlyUseOfComputer x)) (not (ValueOfUseOfComputerNotMoreThan5000 x))))))))
+
+; Section (5)
+(assert (forall ((x Int)) (=> (CausesTransmissionWithoutAuthorization x) (and (CausesDamage x) (not (IntentionallyAccessesProtectedComputerWithoutAuthorization x))))))
+(assert (forall ((x Int)) (=> (IntentionallyAccessesProtectedComputerWithoutAuthorization x) (or (RecklesslyCausesDamage x) (CausesDamageAndLoss x)))))
 
 (check-sat)
 (get-model)
