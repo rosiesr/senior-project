@@ -4,14 +4,14 @@ import Card from 'react-bootstrap/Card';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-
+const ENDPOINT = 'http://localhost:2000/inputtest';
 
 function Solver() {
   const [status, setStatus] = useState('');
   const [output, setOutput] = useState('');
-  const [compliant, setCompliance] = useState(true);
+  const [compliant, setCompliance] = useState('intial state');
 
 
 
@@ -20,9 +20,80 @@ function Solver() {
   const [intent, setIntent] = useState(null)
   const [infoAccessed, setInfoAccessed] = useState('');
 
+  
+  useEffect(() => {
+    console.log("Compliant updated:", compliant);
+  }, [compliant]); // This useEffect will run whenever the 'compliant' state changes
+
+  const fetchData = async (endpoint, input) => {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({input})
+      });
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const jsonData = await response.json();
+      console.log("hit end point");
+      console.log("endpoint returned: " );
+      // console.log(jsonData.dummy);
+
+      setCompliance(jsonData.sum);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  
+  
   function checkCompliance(){
     setStatus('submitting');
-    //run compliance check and
+    //create json input
+    const input_vals = {
+        first_num: 2,
+        second_num: 5
+    };
+
+    fetchData(ENDPOINT, input_vals);
+    console.log("after fetch logging compliance -");
+    // console.log(compliant);
+
+
+
+
+    // const response = await fetch("http://localhost:2000/test", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   }
+    // })
+    //   .then(response => response.json());
+
+    // fetch("http://localhost:2000/test", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(input_vals),
+    // })
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     setCompliance(data.output)
+    //     // if(data.output == "Unsat"){
+    //     //   setCompliance(true);
+    //     // } else{
+    //     //   setCompliance(false);
+    //     // }
+    //   })
+    
+
+
     // setCompliance = runLogic()
     if(compliant){
       setOutput('will run compliance check on the inputted parameters');
