@@ -1,5 +1,12 @@
 import express from "express";
 import cors from "cors";
+import { spawn } from "child_process";
+import path from "path";
+
+// const { express } = require('express');
+// const { cors} = require('cors');
+// const { spawn } = require('child_process');
+// const {path } = require('path');
 
 const app = express();
 const port = 2000;
@@ -16,7 +23,9 @@ app.post('/check', (req, res) => {
   res.send('hit the test endpoint!');
 
   //run python script to check smt logic with given inputs
-  const pythonProcess = spawn('python',[__dirname, "./z3_solver.py", JSON.stringify(input_data)]);
+  const currentModuleDirectory = path.dirname(require.main.filename);
+  const pythonPath = path.join(currentModuleDirectory, 'z3_solver.py');
+  const pythonProcess = spawn('python', [pythonPath, JSON.stringify(input_data)]);
 
   //use stdout of python process as json result
   pythonProcess.stdout.on("output", (output) => {
@@ -37,21 +46,40 @@ app.post('/inputtest', (req, res) => {
 
 app.post('/pythontest', (req, res) => {
   const input_data = req.body.input;
-  const sum = input_data.first_num + input_data.second_num;
+  
   res.header("Access-Control-Allow-Origin", "*");
 
-  const output = { sum : sum};
+  console.log(input_data);
+
+  //set path
+  const currentModuleDirectory = path.dirname(process.argv[1]);
+  const pythonPath = path.join(currentModuleDirectory, './mypythontest.py');
+  
+  // run python script to check smt logic with given inputs
+  const pythonProcess = spawn('python',[pythonPath, JSON.stringify(input_data)]);
+  let stdoutData = ''
+  // use stdout of python process as json result
+  pythonProcess.stdout.on('data', (data) => {
+    stdoutData += data.toString();
+    // res.json(response)
+  });
+
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`stderr from Python process: ${data}`);
+  });
+
+  pythonProcess.on('close', (code) => {
+    console.log(`Python process exited with code ${code}`);
+    // console.log(`std output contians ${stdoutData}`);
+
+    // Return the stdout data as the response
+    const response = JSON.parse(stdoutData.toString());
+    res.json(response);
+  });
+
+  // const output = { sum : sum};
   // const response = JSON.parse(output.toString());
-  res.json(output)
-
-  //run python script to check smt logic with given inputs
-  // const pythonProcess = spawn('python',[__dirname, "./z3_solver.py", JSON.stringify(input_data)]);
-
-  //use stdout of python process as json result
-  // pythonProcess.stdout.on("output", (output) => {
-  //   const response = JSON.parse(output.toString());
-  //   res.json(response)
-  // });
+  // res.json(output)
 
 });
 

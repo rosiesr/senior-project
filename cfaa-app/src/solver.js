@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useState, useEffect } from 'react';
 
-const ENDPOINT = 'http://localhost:2000/inputtest';
+const ENDPOINT = 'http://localhost:2000/pythontest';
 
 function Solver() {
   const [status, setStatus] = useState('');
@@ -39,12 +39,12 @@ function Solver() {
         throw new Error('Network response was not ok');
       }
 
-      const jsonData = await response.json();
       console.log("hit end point");
       console.log("endpoint returned: " );
-      // console.log(jsonData.dummy);
+      const jsonData = await response.json();
+      console.log(jsonData.output);
 
-      setCompliance(jsonData.sum);
+      // setCompliance(jsonData.sum);
     } catch (error) {
       console.error('Error:', error);
     }
