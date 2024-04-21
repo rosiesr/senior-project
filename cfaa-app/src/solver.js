@@ -56,8 +56,8 @@ function Solver() {
     setStatus('submitting');
     //create json input
     const input_vals = {
-        first_num: 2,
-        second_num: 5
+        first_num: intent,
+        second_num: infoAccessed
     };
 
     fetchData(ENDPOINT, input_vals);
