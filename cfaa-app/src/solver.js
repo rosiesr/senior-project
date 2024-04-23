@@ -11,14 +11,14 @@ const ENDPOINT = 'http://localhost:2000/pythontest';
 function Solver() {
   const [status, setStatus] = useState('');
   const [output, setOutput] = useState('');
-  const [compliant, setCompliance] = useState('intial state');
+  const [compliant, setCompliance] = useState(false);
 
 
 
   const [computerType, setComputerType] = useState(null);
   const [havePassword, setHavePassword] = useState(null);
-  const [intent, setIntent] = useState(null)
-  const [infoAccessed, setInfoAccessed] = useState('');
+  const [intent, setIntent] = useState(0)
+  const [infoAccessed, setInfoAccessed] = useState(0);
 
   
   useEffect(() => {
@@ -96,9 +96,11 @@ function Solver() {
 
     // setCompliance = runLogic()
     if(compliant){
-      setOutput('will run compliance check on the inputted parameters');
+      const comp_output = "will run compliance check on the inputted parameters";
+      setOutput(comp_output);
     } else{
-      setOutput('will run compliance check on the inputted parameters');
+      const not_compliant = <span style={{color: 'blue'}}> not compliant test </span>;
+      setOutput(not_compliant);
     }
   }
 
@@ -135,9 +137,12 @@ function Solver() {
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}
                   <Form.Select aria-label="Default select example" onChange = {handleCompTypeChange}>
                     <option>Select</option>
-                    <option value="personal computer">Personal computer</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                    {/* <option value="personal computer">Personal computer</option>
                     <option value="government computer">Government Computer</option>
-                    <option value="employer computer">Employer Computer (non government)</option>
+                    <option value="employer computer">Employer Computer (non government)</option> */}
                   </Form.Select>
                 </div>
               </ListGroup.Item>
@@ -149,9 +154,12 @@ function Solver() {
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}
                   <Form.Select aria-label="Default select example" onChange = {handleHavePasswordChange}>
                     <option>Select</option>
-                    <option value="false">No, I hacked into it</option>
+                    <option value="1">One</option>
+                    <option value="2">Two</option>
+                    <option value="3">Three</option>
+                    {/* <option value="false">No, I hacked into it</option>
                     <option value="true">Yes, it was given to me.</option>
-                    <option value="N/A">Other</option>
+                    <option value="N/A">Other</option> */}
                   </Form.Select>
                 </div>
               </ListGroup.Item>

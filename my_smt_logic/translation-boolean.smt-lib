@@ -1,0 +1,71 @@
+;(set-option :produce-unsat-cores true)
+
+(declare-const KnowinglyAccessesComputerWithoutAuthorization Bool) ;need input
+(declare-const KnowinglyAccessesComputerExceedingAuthorization Bool) ;need input
+(declare-const ObtainsRestrictedInformation Bool) ;internal
+(declare-const InformationDeterminedToRequireProtection Bool) ;need input
+
+(declare-const InformationCanBeUsedToInjureUS Bool) ;need input
+(declare-const InformationCanBeUsedToAdvantageForeignNation Bool) ;need input
+(declare-const CommunicatesInformationToUnauthorizedPerson Bool);need input
+(declare-const FailedToDeliverToUSEntity Bool);need input
+
+(declare-const ObtainsRestrictedInformationSection2 Bool) ;internal
+
+(declare-const FinanciallyRestrictedInformation Bool) ; internal
+(declare-const ContainsFinancialRecordofFinancialInstitution Bool) ;need input
+(declare-const ContainedInConsumerReportingAgency Bool) ;need input
+(declare-const InformationFromProtectedComputer Bool) ;need input
+(declare-const InformationFromDepartmentOrAgencyOfUS Bool) ;need input
+
+(declare-const IntentionallyAccessesComputerWithoutAuthorization Bool) ;need input
+(declare-const NonpublicComputerOfUSDepartmentOrAgency Bool) ;need input
+
+(declare-const ComputerExclusiveGovOrAffectedGov Bool) ;internal
+(declare-const ComputerExclusivelyForGovernmentUse Bool) ;need input
+(declare-const ComputerNotExclusivelyForGovUse Bool) ;need input
+(declare-const ConductAffectsGovernmentUse Bool) ;need input
+
+(declare-const IntentToDefraud Bool) ;need input
+(declare-const ObtainsAnythingOfValue Bool) ;need input
+(declare-const ObjectOfFraudAndThingObtainedOnlyUseOfComputer Bool) ;need input
+(declare-const ValueOfUseOfComputerNotMoreThan5000 Bool) ;need input
+(declare-const SignificantObjectOfFraud Bool) ;internal
+
+
+
+
+
+
+(declare-const NotCompliant Bool) ;internal
+
+
+;Section 1
+(assert (=> (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) ObtainsRestrictedInformation) NotCompliant))
+;define obtaining restricted information
+(assert (=> (and InformationDeterminedToRequireProtection (or InformationCanBeUsedToInjureUS InformationCanBeUsedToAdvantageForeignNation CommunicatesInformationToUnauthorizedPerson FailedToDeliverToUSEntity )) ObtainsRestrictedInformation))
+
+;Section 2
+(assert (=> (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) ObtainsRestrictedInformationSection2) NotCompliant))
+(assert (=> (or ContainsFinancialRecordofFinancialInstitution ContainedInConsumerReportingAgency) FinanciallyRestrictedInformation ))
+(assert (=> (or FinanciallyRestrictedInformation InformationFromDepartmentOrAgencyOfUS InformationFromProtectedComputer ) ObtainsRestrictedInformationSection2 ))
+
+;Section 3
+(assert (=> (or ComputerExclusivelyForGovernmentUse (and ComputerNotExclusivelyForGovUse ConductAffectsGovernmentUse )) ComputerExclusiveGovOrAffectedGov ))
+(assert (=> (and IntentionallyAccessesComputerWithoutAuthorization ComputerExclusiveGovOrAffectedGov NonpublicComputerOfUSDepartmentOrAgency ) NotCompliant ))
+
+;Section 4
+(assert (=> (and ObtainsAnythingOfValue (not (and ObjectOfFraudAndThingObtainedOnlyUseOfComputer ValueOfUseOfComputerNotMoreThan5000 ))) SignificantObjectOfFraud ))
+(assert (=> (and (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) IntentToDefraud) SignificantObjectOfFraud) NotCompliant))
+
+
+
+;appending situation
+;(assert KnowinglyAccessesComputerWithoutAuthorization)
+;(assert (not KnowinglyAccessesComputerWithoutAuthorization))
+
+
+
+(check-sat)
+(get-model)
+;(get-unsat-core)
