@@ -44,6 +44,51 @@ app.post('/inputtest', (req, res) => {
   res.json(output)
 });
 
+app.post('/z3test', (req, res) => {
+  const input_data = req.body.input;
+  
+  res.header("Access-Control-Allow-Origin", "*");
+
+  console.log(input_data);
+
+  //set path
+  // const currentModuleDirectory = path.dirname(process.argv[1]);
+  // const z3path = path.join(currentModuleDirectory, './translation.smt-lib');
+  
+  // run python script to check smt logic with given inputs
+  const z3Process = spawn('z3',['translation.smt-lib']);
+  let stdoutData = ''
+  // use stdout of python process as json result
+  z3Process.stdout.on('data', (data) => {
+    stdoutData += data.toString();
+    console.log(stdoutData);
+    // res.json(response)
+  });
+
+  z3Process.stderr.on('data', (data) => {
+    console.error(`stderr from Python process: ${data}`);
+  });
+
+  z3Process.on('close', (code) => {
+    console.log(`z3 process exited with code ${code}`);
+    // console.log(`std output contians ${stdoutData}`);
+    let sat = stdoutData.toString().split("\n")[0];
+    let response;
+    if(sat == 'unsat'){
+      response = {output: false};
+    } else{
+      response = {output : true};
+    }
+    // Return the stdout data as the response
+    res.json(response);
+  });
+
+  // const output = { sum : sum};
+  // const response = JSON.parse(output.toString());
+  // res.json(output)
+
+});
+
 app.post('/pythontest', (req, res) => {
   const input_data = req.body.input;
   

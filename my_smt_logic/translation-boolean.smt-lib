@@ -1,4 +1,4 @@
-;(set-option :produce-unsat-cores true)
+(set-option :produce-unsat-cores true)
 
 (declare-const KnowinglyAccessesComputerWithoutAuthorization Bool) ;need input
 (declare-const KnowinglyAccessesComputerExceedingAuthorization Bool) ;need input
@@ -23,7 +23,6 @@
 
 (declare-const ComputerExclusiveGovOrAffectedGov Bool) ;internal
 (declare-const ComputerExclusivelyForGovernmentUse Bool) ;need input
-(declare-const ComputerNotExclusivelyForGovUse Bool) ;need input
 (declare-const ConductAffectsGovernmentUse Bool) ;need input
 
 (declare-const IntentToDefraud Bool) ;need input
@@ -31,6 +30,24 @@
 (declare-const ObjectOfFraudAndThingObtainedOnlyUseOfComputer Bool) ;need input
 (declare-const ValueOfUseOfComputerNotMoreThan5000 Bool) ;need input
 (declare-const SignificantObjectOfFraud Bool) ;internal
+
+(declare-const KnowinglyCausesTransmissionOfCode Bool) ;need input
+(declare-const TransmissionCausesDamageWithoutAuthOfProtectedComputer Bool) ;need input
+(declare-const IntentionallyAccessesProtectedComputerWithoutAuthorization Bool) ;need input
+(declare-const ConductResultsInDamageAndLoss Bool) ;need input
+(declare-const ConductResultsInRecklessDamage Bool) ;need input
+(declare-const IntentionallyAccessAndDamage Bool) ; internal
+
+(declare-const KnowinglyAndWithIntentToDefraudTrafficsInPassword Bool) ; need input TO DO CHECK THIS
+(declare-const TraffickingnAffectsInterstateOrForeignCommerce Bool) ; internal 
+(declare-const ComputerUsedByOrForGovernment Bool ) ; need input ?
+
+(declare-const IntentToExtortTransmitsInInterstateCommunication Bool ) ; need input ?
+(declare-const ThreatToDamageProtectedComputer Bool ) ; need input ?
+(declare-const ThreatToObtainInfoFromProtectedComputerWithoutAuth Bool ) ; need input 
+(declare-const ImpairConfidentialityOfInfoObtainedFromProtectedComputer Bool ) ; need input 
+(declare-const DemandForMoneyInRelationToDamageProtectedComputer Bool ) ; need input 
+(declare-const ContainsThreatOrExtotion Bool ) ; internal
 
 
 
@@ -51,21 +68,31 @@
 (assert (=> (or FinanciallyRestrictedInformation InformationFromDepartmentOrAgencyOfUS InformationFromProtectedComputer ) ObtainsRestrictedInformationSection2 ))
 
 ;Section 3
-(assert (=> (or ComputerExclusivelyForGovernmentUse (and ComputerNotExclusivelyForGovUse ConductAffectsGovernmentUse )) ComputerExclusiveGovOrAffectedGov ))
+(assert (=> (or ComputerExclusivelyForGovernmentUse (and (not ComputerExclusivelyForGovUse) ConductAffectsGovernmentUse )) ComputerExclusiveGovOrAffectedGov ))
 (assert (=> (and IntentionallyAccessesComputerWithoutAuthorization ComputerExclusiveGovOrAffectedGov NonpublicComputerOfUSDepartmentOrAgency ) NotCompliant ))
 
 ;Section 4
 (assert (=> (and ObtainsAnythingOfValue (not (and ObjectOfFraudAndThingObtainedOnlyUseOfComputer ValueOfUseOfComputerNotMoreThan5000 ))) SignificantObjectOfFraud ))
 (assert (=> (and (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) IntentToDefraud) SignificantObjectOfFraud) NotCompliant))
 
+;Section 5
+(assert (=> (and IntentionallyAccessesProtectedComputerWithoutAuthorization (or ConductResultsInDamageAndLoss ConductResultsInRecklessDamage)) IntentionallyAccessAndDamage ))
+(assert (=> (or IntentionallyAccessAndDamage (and KnowinglyCausesTransmissionOfCode TransmissionCausesDamageWithoutAuthOfProtectedComputer )) NotCompliant))
+
+;Section 6
+(assert (=> (and KnowinglyAndWithIntentToDefraudTrafficsInPassword (or TraffickingnAffectsInterstateOrForeignCommerce ComputerUsedByOrForGovernment )) NotCompliant))
+
+;Section 7
+(assert (=> (or ThreatToDamageProtectedComputer ThreatToObtainInfoFromProtectedComputerWithoutAuth DemandForMoneyInRelationToDamageProtectedComputer) ContainsThreatOrExtotion))
+(assert (=> (and IntentToExtortTransmitsInInterstateCommunication ContainsThreatOrExtotion) NotCompliant))
 
 
 ;appending situation
-;(assert KnowinglyAccessesComputerWithoutAuthorization)
-;(assert (not KnowinglyAccessesComputerWithoutAuthorization))
+(assert (! KnowinglyAccessesComputerWithoutAuthorization :named a1))
+(assert (! (not KnowinglyAccessesComputerWithoutAuthorization) :named a2))
 
 
 
 (check-sat)
-(get-model)
-;(get-unsat-core)
+;(get-model)
+(get-unsat-core)

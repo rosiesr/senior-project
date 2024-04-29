@@ -6,13 +6,29 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useState, useEffect } from 'react';
 
-const ENDPOINT = 'http://localhost:2000/pythontest';
+const ENDPOINT = 'http://localhost:2000/z3test';
 
 function Solver() {
   const [status, setStatus] = useState('');
   const [output, setOutput] = useState('');
   const [compliant, setCompliance] = useState(false);
 
+  //KnowinglyAccessesComputerWithoutAuthorization
+  const [knowinglyAccessCompWoAuth, setKnowinglyAccessCompWoAuth] = useState(null);
+  //KnowinglyAccessesComputerExceedingAuthorization
+  const [knowinglyAccessCompExceedingAuth, setKnowinglyAccessCompExceedingAuth] = useState(null);
+
+  //ComputerExclusivelyForGovernmentUse
+  const [compExclusiveForGov, setCompExclusiveForGov] = useState(null);
+  //NonpublicComputerOfUsDepartmentOrAgency
+  const [nonpublicCompOfUsDep, setNonpublicCompOfUsDep] = useState(false);
+  //is used for financial institution?
+  const [compFinancialInst, setCompFinancialInst] = useState(null);
+
+  //conduct affects government use
+  const [compAffectsGovUse, setCompAffectsGovUse] = useState(null);
+  //protected computer
+  const [isProtectedComputer, setIsProtectedComputer] = useState(null);
 
 
   const [computerType, setComputerType] = useState(null);
@@ -63,34 +79,6 @@ function Solver() {
     fetchData(ENDPOINT, input_vals);
     console.log("after fetch logging compliance -");
     // console.log(compliant);
-
-
-
-
-    // const response = await fetch("http://localhost:2000/test", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   }
-    // })
-    //   .then(response => response.json());
-
-    // fetch("http://localhost:2000/test", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(input_vals),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     setCompliance(data.output)
-    //     // if(data.output == "Unsat"){
-    //     //   setCompliance(true);
-    //     // } else{
-    //     //   setCompliance(false);
-    //     // }
-    //   })
     
 
 
@@ -101,6 +89,69 @@ function Solver() {
     } else{
       const not_compliant = <span style={{color: 'blue'}}> not compliant test </span>;
       setOutput(not_compliant);
+    }
+  }
+  
+  //set KnowinglyAccessesComputerWithoutAuthorization
+  //QUESTION 1 HANDLE
+  function handleKnowinglyAccessCompWoAuth(e){
+    if(e.target.value == "1"){
+      setKnowinglyAccessCompWoAuth(true);
+    } else{
+      setKnowinglyAccessCompWoAuth(false);
+    }
+  }
+
+  //set handleKnowinglyAccessCompExceedingAuth
+  //QUESTION 2 HANDLE
+  function handleKnowinglyAccessCompExceedingAuth(e){
+    if(e.target.value == "1"){
+      setKnowinglyAccessCompExceedingAuth(true);
+    } else {
+      setKnowinglyAccessCompExceedingAuth(false);
+    }
+    // setKnowinglyAccessCompExceedingAuth(Boolean(e.target.value));
+  }
+
+  //QUESTION 3 HANDLE
+  function handleComputerType(e){
+    if(e.target.value == "gov"){
+      setCompExclusiveForGov(true);
+      setNonpublicCompOfUsDep(true);
+      setCompFinancialInst(false);
+
+    } else if(e.target.value == "pub"){
+      setNonpublicCompOfUsDep(false);
+      setCompExclusiveForGov(false);
+      setCompFinancialInst(false);
+
+    } else if(e.target.value == "fin"){
+      setCompFinancialInst(true);
+      setCompExclusiveForGov(false);
+      setNonpublicCompOfUsDep(false);
+
+      //set up for protected computer
+    } else if(e.target.value == "non"){
+      //skip, since default is false everywhere
+      setCompExclusiveForGov(false);
+      setNonpublicCompOfUsDep(false);
+      setCompFinancialInst(false);
+
+    }
+    else if(e.target.value =="oth"){
+      //TO DO: IF NO COMPUTER IS ACCESSED, UPDATE SOMETHING TO KEEP TRACK (I.E. SKIP TO FRAUD)
+    }
+    // setKnowinglyAccessCompExceedingAuth(Boolean(e.target.value));
+  }
+
+  //question 4 handle
+  function handleCondutAffectQ(e){
+    if(e.target.value == "1"){
+      setCompAffectsGovUse(true);
+      isProtectedComputer(true);
+    } else {
+      setCompAffectsGovUse(false);
+      isProtectedComputer(false);
     }
   }
 
@@ -126,45 +177,77 @@ function Solver() {
         <h1>
           Computer Fraud and Abuse Act SMT Solver
         </h1>
-        <p style={{width: "90%", textAlign: "left"}}> Insert the Situation: </p>
+        <p style={{fontSize: "12pt"}}> Congress enacted the CFAA in 1986 to federally prosecute crimes of hacking. The law has been amended 6 times to broaden its scope. This tool
+          can help users better understand what actions are legal under the law.
+        </p>
+        <p style={{width: "90%", textAlign: "left"}}> Insert the details of the situation below: </p>
         <Card bg="white" style={{width: "95%"}}>
             <ListGroup>
 
-              {/* first question */}
+              {/* KNOWINGLY ACCESS WO AUTH */}
+              {/* QUESTION 1 */}
             <ListGroup.Item style={{backgroundColor: "gray"}}>
-                <span style={{float: "left"}}> What kind of computer was accessed?  </span>
+                <span style={{float: "left"}}> Did you knowingly or intentionally access a computer you didn’t have authorization for? </span>
                 <div style={{float: "right"}}>
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}
-                  <Form.Select aria-label="Default select example" onChange = {handleCompTypeChange}>
+                  <Form.Select aria-label="Default select example" onChange = {handleKnowinglyAccessCompWoAuth}>
                     <option>Select</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                    {/* <option value="personal computer">Personal computer</option>
-                    <option value="government computer">Government Computer</option>
-                    <option value="employer computer">Employer Computer (non government)</option> */}
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
                   </Form.Select>
                 </div>
               </ListGroup.Item>
 
-              {/* second question */}
-              <ListGroup.Item style={{backgroundColor: "gray"}}>
-                <span style={{float: "left"}}> Did you have the appropriate password/authentication to access the information?  </span>
+            {/* KNOWINGLY ACCESS EXCEEDING AUTH */}
+            {/* QUESTION 2 */}
+            <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Did you knowingly access a computer that you had authorization for but exceeded the scope of the authorization? </span>
                 <div style={{float: "right"}}>
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}
-                  <Form.Select aria-label="Default select example" onChange = {handleHavePasswordChange}>
+                  <Form.Select aria-label="Default select example" onChange = {handleKnowinglyAccessCompExceedingAuth}>
                     <option>Select</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                    {/* <option value="false">No, I hacked into it</option>
-                    <option value="true">Yes, it was given to me.</option>
-                    <option value="N/A">Other</option> */}
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
                   </Form.Select>
                 </div>
               </ListGroup.Item>
 
-              {/* third question */}
+            {/* what kind of computer did you access */}
+            {/* QUESTION 3 */}
+            <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> What kind of computer did you access? </span>
+                <div style={{float: "right"}}>
+                  {/* NEED TO CHANGE VALUES TO SMT READABLE */}
+                  <Form.Select aria-label="Default select example" onChange = {handleComputerType}>
+                    <option>Select</option>
+                    <option value="gov"> Computer Exclusive for Government</option>
+                    <option value="pub">Public Computer used by Government</option>
+                    <option value="fin">Finacial Institution Computer</option>
+                    <option value="non">Non-Government/Non-Finaicial Computer</option>
+                    <option value="oth">Didn't Access a Computer</option>
+
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>
+
+
+              {/* (optional – only if it's a public computer)  */}
+              {/* TO DO: doesn't disappear if prior question on select, maybe we change styling */}
+              {/*  QUESTION 4 */}
+              {compFinancialInst == false && compExclusiveForGov == false && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}>  If the computer is not exclusively used by the government or financial institution, did the conduct of the situation affect the government/financial use?  </span>
+                <div style={{float: "right"}}>
+                  {/* NEED TO CHANGE VALUES TO SMT READABLE */}
+                  <Form.Select aria-label="Default select example" onChange = {handleCondutAffectQ}>
+                    <option>Select</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
+
+              {/* QUESTION 5 */}
               <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> What was your intent in accessing the computer?  </span>
                 <div style={{float: "right"}}>
