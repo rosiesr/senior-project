@@ -30,6 +30,18 @@ function Solver() {
   //protected computer
   const [isProtectedComputer, setIsProtectedComputer] = useState(null);
 
+  //obtained information?
+  const [obtainedInfo, setObtainedInfo] = useState(null);
+
+  //info determined to require protetion?
+  const [informationDeterminedToRequireProtection, setInformationDeterminedToRequireProtection] = useState(null);
+  const [informationCanBeUsedToInjureUS, setInformationCanBeUsedToInjureUS] = useState(null);
+  const [informationCanBeUsedToAdvantageForeignNation, setInformationCanBeUsedToAdvantageForeignNation] = useState(null);
+  const [containsFinancialRecordofFinancialInstitution, setContainsFinancialRecordofFinancialInstitution] = useState(null);
+  const [containedInConsumerReportingAgency, setContainedInConsumerReportingAgency] = useState(null);
+  const [infoFromDeptOrAgencyOfUS, setinfoFromDeptOrAgencyOfUS] = useState(null);
+
+
 
   const [computerType, setComputerType] = useState(null);
   const [havePassword, setHavePassword] = useState(null);
@@ -72,6 +84,7 @@ function Solver() {
     setStatus('submitting');
     //create json input
     const input_vals = {
+        knowingly_access_comp_wo_auth: knowinglyAccessCompWoAuth,
         first_num: intent,
         second_num: infoAccessed
     };
@@ -145,13 +158,90 @@ function Solver() {
   }
 
   //question 4 handle
-  function handleCondutAffectQ(e){
+  function handleConductAffectQ(e){
     if(e.target.value == "1"){
       setCompAffectsGovUse(true);
-      isProtectedComputer(true);
+      setIsProtectedComputer(true);
     } else {
       setCompAffectsGovUse(false);
-      isProtectedComputer(false);
+      setIsProtectedComputer(false);
+    }
+  }
+
+  //question 5 handle
+  function handleObtainedInfo(e){
+    if(e.target.value == "1"){
+      setObtainedInfo(true);
+    } else{
+      setObtainedInfo(false);
+    }
+  }
+
+  //question 6 handle
+  // <option value="1">Info required by statue or exec order to require protection</option>
+  // <option value="2">Info that can be used to Injure US</option>
+  // <option value="3">Info that can be used to advantage foreign nations</option>
+  // <option value="4">Info that contains financial record of financial institution </option>
+  // <option value="5">Info that's contained in fire of consumer reporting agency</option>
+  // <option value="6">Info From US Department or Agency</option>
+  //TO DO MAKE THIS MULTISELECT
+  function handleObtainedInfoType(e){
+    if(e.target.value == "1"){
+      //REQUIRE PROTECTION
+      setInformationDeterminedToRequireProtection(true);
+      setInformationCanBeUsedToInjureUS(false);
+      setInformationCanBeUsedToAdvantageForeignNation(false);
+      setContainsFinancialRecordofFinancialInstitution(false);
+      setContainedInConsumerReportingAgency(false);
+      setinfoFromDeptOrAgencyOfUS(false);
+    } else if(e.target.value == "2"){
+      setInformationDeterminedToRequireProtection(false);
+      //INJURE US
+      setInformationCanBeUsedToInjureUS(true);
+      setInformationCanBeUsedToAdvantageForeignNation(false);
+      setContainsFinancialRecordofFinancialInstitution(false);
+      setContainedInConsumerReportingAgency(false);
+      setinfoFromDeptOrAgencyOfUS(false);
+
+
+    } else if(e.target.value == "3"){
+      setInformationDeterminedToRequireProtection(false)
+      setInformationCanBeUsedToInjureUS(false);
+      //ADVANTAGE FOREIGN
+      setInformationCanBeUsedToAdvantageForeignNation(true);
+      setContainsFinancialRecordofFinancialInstitution(false);
+      setContainedInConsumerReportingAgency(false);
+      setinfoFromDeptOrAgencyOfUS(false);
+
+    } else if(e.target.value == "4"){
+      setInformationDeterminedToRequireProtection(false);
+      setInformationCanBeUsedToInjureUS(false);
+      setInformationCanBeUsedToAdvantageForeignNation(false);
+      //FINANCIAL RECORD
+      setContainsFinancialRecordofFinancialInstitution(true);
+      setContainedInConsumerReportingAgency(false);
+      setinfoFromDeptOrAgencyOfUS(false);
+
+
+    } else if(e.target.value == "5"){
+      setInformationDeterminedToRequireProtection(false);
+      setInformationCanBeUsedToInjureUS(false);
+      setInformationCanBeUsedToAdvantageForeignNation(false);
+      setContainsFinancialRecordofFinancialInstitution(false);
+      //CONSUMER REPORTING
+      setContainedInConsumerReportingAgency(true);
+      setinfoFromDeptOrAgencyOfUS(false);
+
+    } else if(e.target.value == "6"){
+      setInformationDeterminedToRequireProtection(false);
+      setInformationCanBeUsedToInjureUS(false);
+      setInformationCanBeUsedToAdvantageForeignNation(false);      
+      setContainsFinancialRecordofFinancialInstitution(false);
+      setContainedInConsumerReportingAgency(false);
+      //info from us department
+      setinfoFromDeptOrAgencyOfUS(false);
+
+
     }
   }
 
@@ -173,7 +263,7 @@ function Solver() {
 
   return (
     <div className="App">
-      <div className="App-header">
+      <div className="App-header" style={{margin: "16px"}}>
         <h1>
           Computer Fraud and Abuse Act SMT Solver
         </h1>
@@ -238,7 +328,7 @@ function Solver() {
                 <span style={{float: "left"}}>  If the computer is not exclusively used by the government or financial institution, did the conduct of the situation affect the government/financial use?  </span>
                 <div style={{float: "right"}}>
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}
-                  <Form.Select aria-label="Default select example" onChange = {handleCondutAffectQ}>
+                  <Form.Select aria-label="Default select example" onChange = {handleConductAffectQ}>
                     <option>Select</option>
                     <option value="1">Yes</option>
                     <option value="2">No</option>
@@ -246,26 +336,44 @@ function Solver() {
                 </div>
               </ListGroup.Item>}
 
-
+              {/* obtained any information? */}
               {/* QUESTION 5 */}
               <ListGroup.Item style={{backgroundColor: "gray"}}>
-                <span style={{float: "left"}}> What was your intent in accessing the computer?  </span>
+                <span style={{float: "left"}}> Did you obtain information as a result of accessing the computer?  </span>
                 <div style={{float: "right"}}>
                   {/* <Button> Select Options Here </Button> */}
-                  <Form.Select aria-label="Default select example" onChange = {handleIntentChange}>
+                  <Form.Select aria-label="Default select example" onChange = {handleObtainedInfo}>
                     <option>Select</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
                   </Form.Select>
                 </div>
               </ListGroup.Item>
 
-              {/* fourth question */}
-              <ListGroup.Item style={{backgroundColor: "gray"}}>
-                <span style={{float: "left"}}> What kind of information was accessed?  </span>
+              {/* OPTIONAL – only if obtained info */}
+              {/* obtained any information? */}
+              {/* QUESTION 6 */}
+              {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> What kind of information did you obtain (check boxes?)  </span>
                 <div style={{float: "right"}}>
                   {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handleObtainedInfoType}>
+                    <option>Select</option>
+                    <option value="1">Info required by statue or exec order to require protection</option>
+                    <option value="2">Info that can be used to Injure US</option>
+                    <option value="3">Info that can be used to advantage foreign nations</option>
+                    <option value="4">Info that contains financial record of financial institution </option>
+                    <option value="5">Info that's contained in fire of consumer reporting agency</option>
+                    <option value="6">Info From US Department or Agency</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
+
+              {/* fourth question */}
+              {/* <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> What kind of information was accessed?  </span>
+                <div style={{float: "right"}}>
                   <Form.Select aria-label="Default select example" onChange = {handleInfoAccessChange}>
                     <option>Select</option>
                     <option value="1">One</option>
@@ -273,7 +381,7 @@ function Solver() {
                     <option value="3">Three</option>
                   </Form.Select>
                 </div>
-              </ListGroup.Item>
+              </ListGroup.Item> */}
 
             </ListGroup>
         </Card>

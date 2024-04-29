@@ -56,7 +56,7 @@ app.post('/z3test', (req, res) => {
   // const z3path = path.join(currentModuleDirectory, './translation.smt-lib');
   
   // run python script to check smt logic with given inputs
-  const z3Process = spawn('z3',['translation.smt-lib']);
+  const z3Process = spawn('z3',['z3_translation/translation.smt-lib']);
   let stdoutData = ''
   // use stdout of python process as json result
   z3Process.stdout.on('data', (data) => {
@@ -71,7 +71,6 @@ app.post('/z3test', (req, res) => {
 
   z3Process.on('close', (code) => {
     console.log(`z3 process exited with code ${code}`);
-    // console.log(`std output contians ${stdoutData}`);
     let sat = stdoutData.toString().split("\n")[0];
     let response;
     if(sat == 'unsat'){
