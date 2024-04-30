@@ -11,22 +11,24 @@ const ENDPOINT = 'http://localhost:2000/z3test';
 function Solver() {
   const [status, setStatus] = useState('');
   const [output, setOutput] = useState('');
-  const [compliant, setCompliance] = useState(false);
+  const [compliant, setCompliance] = useState(true);
 
-  //KnowinglyAccessesComputerWithoutAuthorization
+  //KnowinglyAccessesComputerWithoutAuthorization, intentionallyAccessesComputerWoAuth
   const [knowinglyAccessCompWoAuth, setKnowinglyAccessCompWoAuth] = useState(null);
+  const [intentionallyAccessCompWoAuth, setIntentionallyAccessCompWoAuth] = useState(null);
+
   //KnowinglyAccessesComputerExceedingAuthorization
   const [knowinglyAccessCompExceedingAuth, setKnowinglyAccessCompExceedingAuth] = useState(null);
 
   //ComputerExclusivelyForGovernmentUse
   const [compExclusiveForGov, setCompExclusiveForGov] = useState(null);
   //NonpublicComputerOfUsDepartmentOrAgency
-  const [nonpublicCompOfUsDep, setNonpublicCompOfUsDep] = useState(false);
+  const [nonpublicCompOfUsDep, setNonpublicCompOfUsDep] = useState(null);
   //is used for financial institution?
   const [compFinancialInst, setCompFinancialInst] = useState(null);
 
   //conduct affects government use
-  const [compAffectsGovUse, setCompAffectsGovUse] = useState(null);
+  const [conductAffectsGovUse, setConductAffectsGovUse] = useState(null);
   //protected computer
   const [isProtectedComputer, setIsProtectedComputer] = useState(null);
 
@@ -41,7 +43,15 @@ function Solver() {
   const [containedInConsumerReportingAgency, setContainedInConsumerReportingAgency] = useState(null);
   const [infoFromDeptOrAgencyOfUS, setinfoFromDeptOrAgencyOfUS] = useState(null);
 
+  //use information
+  const [communicatesInfoToUnauthPerson, setCommunicatesInfoToUnauthPerson] = useState(null);
+  const [failsToDeliverToUsEntity, setFailsToDeliverToUsEntity]= useState(null);
 
+  //fraud
+  const [intentToDefraud, setIntentToDefraud]= useState(null);
+
+  const [obtainsAnythingOfValue, setObtainsAnythingOfValue]= useState(null);
+  const [objectOfFraudAndOnlyUseOfCompObtained, setObjectOfFraudAndOnlyUseOfCompObtained]= useState(null);
 
   const [computerType, setComputerType] = useState(null);
   const [havePassword, setHavePassword] = useState(null);
@@ -53,7 +63,7 @@ function Solver() {
     console.log("Compliant updated:", compliant);
   }, [compliant]); // This useEffect will run whenever the 'compliant' state changes
 
-  const fetchData = async (endpoint, input) => {
+  const fetchDataAndUpdateCompliance = async (endpoint, input) => {
     try {
       const response = await fetch(endpoint, {
         method: "POST",
@@ -71,38 +81,57 @@ function Solver() {
       console.log("endpoint returned: " );
       const jsonData = await response.json();
       console.log(jsonData.output);
+      setCompliance(jsonData.output);
+      // update compliance and output :
+      if(jsonData.output){
+        const comp_output = "The inputted situation is compliant with the CFAA.";
+        setOutput(comp_output);
+      } else{
+        const not_compliant = <span style={{color: 'red'}}> The inputted siutation is <strong>not</strong> compliant with the CFAA. </span>;
+        setOutput(not_compliant);
+      }
 
-      // setCompliance(jsonData.sum);
+
+
     } catch (error) {
       console.error('Error:', error);
     }
   };
   
   
-  
+  // COMPLIANCE CHECK HERE
   function checkCompliance(){
     setStatus('submitting');
+
+    //TODO: confirm this!!
+    const infoFromProtectedComputer = (obtainedInfo && isProtectedComputer);
     //create json input
     const input_vals = {
         knowingly_access_comp_wo_auth: knowinglyAccessCompWoAuth,
+        knowingly_access_comp_exceeding_auth: knowinglyAccessCompExceedingAuth,
+        info_det_to_require_protection: informationDeterminedToRequireProtection,
+        info_can_be_used_to_injure_US: informationCanBeUsedToInjureUS,
+        info_can_be_used_to_advantage_foreign: informationCanBeUsedToAdvantageForeignNation,
+        communicates_info_to_unauth_person: communicatesInfoToUnauthPerson,
+        fails_to_deliver_to_us_entity: failsToDeliverToUsEntity, 
+        contains_financial_record_of_financial_inst: containsFinancialRecordofFinancialInstitution,
+        contained_in_consumer_reporting_agency: containedInConsumerReportingAgency,
+        info_from_protected_computer: infoFromProtectedComputer,
+        info_from_dep_or_agency_of_us: infoFromDeptOrAgencyOfUS,
+        intentially_accesses_comp_wo_auth: intentionallyAccessCompWoAuth,
+        non_public_computer_of_us_dept: nonpublicCompOfUsDep,
+        computer_exclusive_for_gov_use: compExclusiveForGov,
+        conduct_affects_gov_use: conductAffectsGovUse,
+        intent_to_defraud: intentToDefraud,
+        obtains_anything_of_value: obtainsAnythingOfValue,
+        object_of_fraud_and_only_use_of_comp_obtained: objectOfFraudAndOnlyUseOfCompObtained,
+
         first_num: intent,
         second_num: infoAccessed
     };
 
-    fetchData(ENDPOINT, input_vals);
-    console.log("after fetch logging compliance -");
-    // console.log(compliant);
-    
+    fetchDataAndUpdateCompliance(ENDPOINT, input_vals);
 
-
-    // setCompliance = runLogic()
-    if(compliant){
-      const comp_output = "will run compliance check on the inputted parameters";
-      setOutput(comp_output);
-    } else{
-      const not_compliant = <span style={{color: 'blue'}}> not compliant test </span>;
-      setOutput(not_compliant);
-    }
   }
   
   //set KnowinglyAccessesComputerWithoutAuthorization
@@ -110,8 +139,10 @@ function Solver() {
   function handleKnowinglyAccessCompWoAuth(e){
     if(e.target.value == "1"){
       setKnowinglyAccessCompWoAuth(true);
+      setIntentionallyAccessCompWoAuth(true);
     } else{
       setKnowinglyAccessCompWoAuth(false);
+      setIntentionallyAccessCompWoAuth(false);
     }
   }
 
@@ -131,7 +162,7 @@ function Solver() {
     if(e.target.value == "gov"){
       setCompExclusiveForGov(true);
       setNonpublicCompOfUsDep(true);
-      setCompFinancialInst(false);
+      setCompFinancialInst(null);
 
     } else if(e.target.value == "pub"){
       setNonpublicCompOfUsDep(false);
@@ -140,8 +171,8 @@ function Solver() {
 
     } else if(e.target.value == "fin"){
       setCompFinancialInst(true);
-      setCompExclusiveForGov(false);
-      setNonpublicCompOfUsDep(false);
+      setCompExclusiveForGov(null);
+      setNonpublicCompOfUsDep(null);
 
       //set up for protected computer
     } else if(e.target.value == "non"){
@@ -160,10 +191,10 @@ function Solver() {
   //question 4 handle
   function handleConductAffectQ(e){
     if(e.target.value == "1"){
-      setCompAffectsGovUse(true);
+      setConductAffectsGovUse(true);
       setIsProtectedComputer(true);
     } else {
-      setCompAffectsGovUse(false);
+      setConductAffectsGovUse(false);
       setIsProtectedComputer(false);
     }
   }
@@ -189,11 +220,11 @@ function Solver() {
     if(e.target.value == "1"){
       //REQUIRE PROTECTION
       setInformationDeterminedToRequireProtection(true);
-      setInformationCanBeUsedToInjureUS(false);
-      setInformationCanBeUsedToAdvantageForeignNation(false);
-      setContainsFinancialRecordofFinancialInstitution(false);
-      setContainedInConsumerReportingAgency(false);
-      setinfoFromDeptOrAgencyOfUS(false);
+      setInformationCanBeUsedToInjureUS(null);
+      setInformationCanBeUsedToAdvantageForeignNation(null);
+      setContainsFinancialRecordofFinancialInstitution(null);
+      setContainedInConsumerReportingAgency(null);
+      setinfoFromDeptOrAgencyOfUS(null);
     } else if(e.target.value == "2"){
       setInformationDeterminedToRequireProtection(false);
       //INJURE US
@@ -239,12 +270,72 @@ function Solver() {
       setContainsFinancialRecordofFinancialInstitution(false);
       setContainedInConsumerReportingAgency(false);
       //info from us department
+      setinfoFromDeptOrAgencyOfUS(true);
+    } else if(e.target.value == "7"){
+      //ALL FALSE?
+      setInformationDeterminedToRequireProtection(false);
+      setInformationCanBeUsedToInjureUS(false);
+      setInformationCanBeUsedToAdvantageForeignNation(false);      
+      setContainsFinancialRecordofFinancialInstitution(false);
+      setContainedInConsumerReportingAgency(false);
       setinfoFromDeptOrAgencyOfUS(false);
-
-
     }
   }
 
+  //question 7 handle
+  function handleSharedInformation(e){
+    if(e.target.value == "1"){
+      setCommunicatesInfoToUnauthPerson(true);
+    } else if(e.target.vale == "2"){
+      setCommunicatesInfoToUnauthPerson(false);
+    } else{
+      setCommunicatesInfoToUnauthPerson(null);
+    }
+  }
+
+  //question 8 handle
+  function handlePreventedInfoDelivery(e){
+    if(e.target.value == "1"){
+      setFailsToDeliverToUsEntity(true);
+    } else if(e.target.vale == "2"){
+      setFailsToDeliverToUsEntity(false);
+    } else{
+      setFailsToDeliverToUsEntity(null);
+    }
+  }
+
+  //question 9 handle
+  function handleIntentToDefraud(e){
+    if(e.target.value == "1"){
+      setIntentToDefraud(true);
+    } else if(e.target.vale == "2"){
+      setIntentToDefraud(false);
+      //reliant questions
+      setObjectOfFraudAndOnlyUseOfCompObtained(null);
+      setObtainsAnythingOfValue(null);
+
+    } else{
+      setIntentToDefraud(null);
+      setObjectOfFraudAndOnlyUseOfCompObtained(null);
+      setObtainsAnythingOfValue(null);
+    }
+  }
+
+  //question 10 handle
+  function handleObtainsValue(e){
+    if(e.target.value == "1"){
+      setObtainsAnythingOfValue(true);
+      setObjectOfFraudAndOnlyUseOfCompObtained(false);
+    } else if(e.target.vale == "2"){
+      setObtainsAnythingOfValue(false);
+      setObjectOfFraudAndOnlyUseOfCompObtained(true);
+    } else{
+      setObtainsAnythingOfValue(null);
+      setObjectOfFraudAndOnlyUseOfCompObtained(null);
+    }
+  }
+
+  //-------------------
   function handleCompTypeChange(e){
     setComputerType(e.target.value);
   }
@@ -260,6 +351,7 @@ function Solver() {
   function handleInfoAccessChange(e){
     setInfoAccessed(e.target.value);
   }
+  //------------------
 
   return (
     <div className="App">
@@ -363,8 +455,66 @@ function Solver() {
                     <option value="2">Info that can be used to Injure US</option>
                     <option value="3">Info that can be used to advantage foreign nations</option>
                     <option value="4">Info that contains financial record of financial institution </option>
-                    <option value="5">Info that's contained in fire of consumer reporting agency</option>
+                    <option value="5">Info that's contained in a file of consumer reporting agency</option>
                     <option value="6">Info From US Department or Agency</option>
+                    <option value="7">None of the above</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
+              {/* OPTIONAL – only if inobtained info was shared  */}
+              {/* QUESTION 7 */}
+             {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Did you share the information with any unauthorized people?  </span>
+                <div style={{float: "right"}}>
+                  {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handleSharedInformation}>
+                    <option>Select</option>
+                    <option value="1">Yes </option>
+                    <option value="2">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
+
+              {/* OPTIONAL – only if inobtained info was shared  */}
+              {/* QUESTION 8 */}
+             {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Did your actions prevent the delivery of information to a US entity?</span>
+                <div style={{float: "right"}}>
+                  {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handlePreventedInfoDelivery}>
+                    <option>Select</option>
+                    <option value="1">Yes </option>
+                    <option value="2">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
+              {/* attempt to defraud when accessing computer */}
+              {/* QUESTION 9 */}
+              <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Did you have intent to commit fraud when accessing the computer? </span>
+                <div style={{float: "right"}}>
+                  {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handleIntentToDefraud}>
+                    <option>Select</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>
+
+              {/* OPTIONAL –obtain anything of monetary value through fraud */}
+              {/* QUESTION 10 */}
+              {intentToDefraud && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Did you obtain anything of monetary value through the fraud? </span>
+                <div style={{float: "right"}}>
+                  {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handleObtainsValue}>
+                    <option>Select</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No, just the use of the computer</option>
                   </Form.Select>
                 </div>
               </ListGroup.Item>}
@@ -395,7 +545,7 @@ function Solver() {
           {output}
           <br/>
           {/* JUST FOR DEVELOPING – WHAT'S CURRENT STATE */}
-          Computer type: {computerType}, Have Password?: {havePassword}, intent: {intent}, info accessed: {infoAccessed}
+          {/* Computer type: {computerType}, Have Password?: {havePassword}, intent: {intent}, info accessed: {infoAccessed} */}
         </div>
       </div>
     </div>

@@ -72,7 +72,7 @@
 (assert (=> (and IntentionallyAccessesComputerWithoutAuthorization ComputerExclusiveGovOrAffectedGov NonpublicComputerOfUSDepartmentOrAgency ) NotCompliant ))
 
 ;Section 4
-(assert (=> (and ObtainsAnythingOfValue (not (and ObjectOfFraudAndThingObtainedOnlyUseOfComputer ValueOfUseOfComputerNotMoreThan5000 ))) SignificantObjectOfFraud ))
+(assert (=> (or ObtainsAnythingOfValue (not (and ObjectOfFraudAndThingObtainedOnlyUseOfComputer ValueOfUseOfComputerNotMoreThan5000 ))) SignificantObjectOfFraud ))
 (assert (=> (and (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) IntentToDefraud) SignificantObjectOfFraud) NotCompliant))
 
 ;Section 5
@@ -87,12 +87,3 @@
 (assert (=> (and IntentToExtortTransmitsInInterstateCommunication ContainsThreatOrExtotion) NotCompliant))
 
 
-;appending situation
-(assert (! KnowinglyAccessesComputerWithoutAuthorization :named a1))
-(assert (! (not KnowinglyAccessesComputerWithoutAuthorization) :named a2))
-
-
-
-(check-sat)
-;(get-model)
-(get-unsat-core)

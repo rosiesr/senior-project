@@ -68,7 +68,7 @@
 (assert (=> (or FinanciallyRestrictedInformation InformationFromDepartmentOrAgencyOfUS InformationFromProtectedComputer ) ObtainsRestrictedInformationSection2 ))
 
 ;Section 3
-(assert (=> (or ComputerExclusivelyForGovernmentUse (and (not ComputerExclusivelyForGovUse) ConductAffectsGovernmentUse )) ComputerExclusiveGovOrAffectedGov ))
+(assert (=> (or ComputerExclusivelyForGovernmentUse (and (not ComputerExclusivelyForGovernmentUse) ConductAffectsGovernmentUse )) ComputerExclusiveGovOrAffectedGov ))
 (assert (=> (and IntentionallyAccessesComputerWithoutAuthorization ComputerExclusiveGovOrAffectedGov NonpublicComputerOfUSDepartmentOrAgency ) NotCompliant ))
 
 ;Section 4
@@ -86,12 +86,13 @@
 (assert (=> (or ThreatToDamageProtectedComputer ThreatToObtainInfoFromProtectedComputerWithoutAuth DemandForMoneyInRelationToDamageProtectedComputer) ContainsThreatOrExtotion))
 (assert (=> (and IntentToExtortTransmitsInInterstateCommunication ContainsThreatOrExtotion) NotCompliant))
 
-;appending situation
+
 (assert (! KnowinglyAccessesComputerWithoutAuthorization :named a1))
-(assert (! (not KnowinglyAccessesComputerWithoutAuthorization) :named a2))
-
-
-
+(assert (! IntentionallyAccessesComputerWithoutAuthorization :named a12))
+(assert (! (not NonpublicComputerOfUSDepartmentOrAgency) :named a13))
+(assert (! (not ComputerExclusivelyForGovernmentUse) :named a14))
+(assert (! ConductAffectsGovernmentUse :named a15))
+(assert (! IntentToDefraud :named a16))
+(assert (! ObtainsAnythingOfValue :named a17))
+(assert (! (not NotCompliant) :named notComp))
 (check-sat)
-;(get-model)
-(get-unsat-core)
