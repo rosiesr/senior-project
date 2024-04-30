@@ -198,9 +198,68 @@ app.post('/z3test', (req, res) => {
     }
   } 
 
-  // ;appending situation
-  // (assert (! KnowinglyAccessesComputerWithoutAuthorization :named a1))
-  // (assert (! (not KnowinglyAccessesComputerWithoutAuthorization) :named a2))
+  //a19 --> value of use of computer not more than 500k
+  if(input_data.value_of_use_greater_than_5k != null){
+    if(input_data.value_of_use_greater_than_5k == true){
+      appendAssertions+=`(assert (! ValueOfUseOfComputerNotMoreThan5000 :named a19))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not ValueOfUseOfComputerNotMoreThan5000) :named a19))\n`;
+    }
+  } 
+
+  //a20 --> knowingly cases transmission of code
+  if(input_data.knowingly_cases_trasnmission_of_code != null){
+    if(input_data.knowingly_cases_trasnmission_of_code == true){
+      appendAssertions+=`(assert (! KnowinglyCausesTransmissionOfCode :named a20))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not KnowinglyCausesTransmissionOfCode) :named a20))\n`;
+    }
+  } 
+
+  //a21 --> transmission of code casues damage without authorization of protected computer
+  if(input_data.transmission_cases_damage_wo_auth_protected_comp != null){
+    if(input_data.transmission_cases_damage_wo_auth_protected_comp == true){
+      appendAssertions+=`(assert (! TransmissionCausesDamageWithoutAuthOfProtectedComputer :named a21))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not TransmissionCausesDamageWithoutAuthOfProtectedComputer) :named a21))\n`;
+    }
+  } 
+
+  //a22 --> intentionally accesses computer without authorization
+  if(input_data.intentionally_accesses_computer_wo_auth != null){
+    if(input_data.intentionally_accesses_computer_wo_auth == true){
+      appendAssertions+=`(assert (! IntentionallyAccessesComputerWithoutAuthorization :named a22))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not IntentionallyAccessesComputerWithoutAuthorization) :named a22))\n`;
+    }
+  } 
+
+  //a23 --> conduct results in damage and loss
+  if(input_data.conduct_results_in_damage_and_loss != null){
+    if(input_data.conduct_results_in_damage_and_loss == true){
+      appendAssertions+=`(assert (! ConductResultsInDamageAndLoss :named a23))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not ConductResultsInDamageAndLoss) :named a23))\n`;
+    }
+  } 
+
+  //a24 --> conduct results in reckless damage
+  if(input_data.conduct_results_in_reckless_damage != null){
+    if(input_data.conduct_results_in_reckless_damage == true){
+      appendAssertions+=`(assert (! ConductResultsInRecklessDamage :named a24))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not ConductResultsInRecklessDamage) :named a24))\n`;
+    }
+  } 
+
+  //a25 --> is protected computer
+  if(input_data.is_protected_computer != null){
+    if(input_data.is_protected_computer == true){
+      appendAssertions+=`(assert (! IsProtectedComputer :named a25))\n`;
+    } else{
+      appendAssertions+=`(assert (! (not IsProtectedComputer) :named a25))\n`;
+    }
+  } 
 
   appendAssertions+=`(assert (! (not NotCompliant) :named notComp))\n`;
   appendAssertions+=`(check-sat)\n`;

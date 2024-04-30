@@ -4,6 +4,7 @@
 (declare-const KnowinglyAccessesComputerExceedingAuthorization Bool) ;need input
 (declare-const ObtainsRestrictedInformation Bool) ;internal
 (declare-const InformationDeterminedToRequireProtection Bool) ;need input
+(declare-const IsProtectedComputer Bool) ; internal
 
 (declare-const InformationCanBeUsedToInjureUS Bool) ;need input
 (declare-const InformationCanBeUsedToAdvantageForeignNation Bool) ;need input
@@ -56,6 +57,7 @@
 
 (declare-const NotCompliant Bool) ;internal
 
+(assert (=> (and IntentionallyAccessesComputerWithoutAuthorization IsProtectedComputer ) IntentionallyAccessesProtectedComputerWithoutAuthorization))
 
 ;Section 1
 (assert (=> (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) ObtainsRestrictedInformation) NotCompliant))

@@ -4,6 +4,7 @@
 (declare-const KnowinglyAccessesComputerExceedingAuthorization Bool) ;need input
 (declare-const ObtainsRestrictedInformation Bool) ;internal
 (declare-const InformationDeterminedToRequireProtection Bool) ;need input
+(declare-const IsProtectedComputer Bool) ; internal
 
 (declare-const InformationCanBeUsedToInjureUS Bool) ;need input
 (declare-const InformationCanBeUsedToAdvantageForeignNation Bool) ;need input
@@ -56,6 +57,7 @@
 
 (declare-const NotCompliant Bool) ;internal
 
+(assert (=> (and IntentionallyAccessesComputerWithoutAuthorization IsProtectedComputer ) IntentionallyAccessesProtectedComputerWithoutAuthorization))
 
 ;Section 1
 (assert (=> (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) ObtainsRestrictedInformation) NotCompliant))
@@ -88,11 +90,19 @@
 
 
 (assert (! KnowinglyAccessesComputerWithoutAuthorization :named a1))
+(assert (! KnowinglyAccessesComputerExceedingAuthorization :named a2))
+(assert (! InformationDeterminedToRequireProtection :named a3))
+(assert (! (not CommunicatesInformationToUnauthorizedPerson) :named a6))
+(assert (! (not FailedToDeliverToUSEntity) :named a7))
+(assert (! (not InformationFromProtectedComputer) :named a10))
 (assert (! IntentionallyAccessesComputerWithoutAuthorization :named a12))
 (assert (! (not NonpublicComputerOfUSDepartmentOrAgency) :named a13))
 (assert (! (not ComputerExclusivelyForGovernmentUse) :named a14))
 (assert (! ConductAffectsGovernmentUse :named a15))
-(assert (! IntentToDefraud :named a16))
-(assert (! ObtainsAnythingOfValue :named a17))
+(assert (! (not IntentToDefraud) :named a16))
+(assert (! IntentionallyAccessesComputerWithoutAuthorization :named a22))
+(assert (! (not ConductResultsInDamageAndLoss) :named a23))
+(assert (! (not ConductResultsInRecklessDamage) :named a24))
+(assert (! IsProtectedComputer :named a25))
 (assert (! (not NotCompliant) :named notComp))
 (check-sat)

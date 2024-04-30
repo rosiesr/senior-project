@@ -56,6 +56,7 @@
 
 (declare-const NotCompliant Bool) ;internal
 
+(assert (=> (and IntentionallyAccessesComputerWithoutAuthorization InformationFromProtectedComputer ) IntentionallyAccessesProtectedComputerWithoutAuthorization))
 
 ;Section 1
 (assert (=> (and (or KnowinglyAccessesComputerWithoutAuthorization KnowinglyAccessesComputerExceedingAuthorization) ObtainsRestrictedInformation) NotCompliant))

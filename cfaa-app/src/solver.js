@@ -52,6 +52,14 @@ function Solver() {
 
   const [obtainsAnythingOfValue, setObtainsAnythingOfValue]= useState(null);
   const [objectOfFraudAndOnlyUseOfCompObtained, setObjectOfFraudAndOnlyUseOfCompObtained]= useState(null);
+  const [valueOfUseGreaterThan5k, setValueOfUseGreaterThan5k]= useState(null);
+
+  //knowingly transmit program/code
+  const [knowinglyCausesTransmissionOfCode, setKnowinglyCausesTransmissionOfCode]= useState(null);
+  const [transmissionCausesDamageWithoutAuthOfProtectedComp, setTransmissionCausesDamageWithoutAuthOfProtectedComp]= useState(null);
+  const [conductResultsInDamageAndLoss, setConductResultsInDamageAndLoss]= useState(null);
+  const [conductResultsInRecklessDamage, setConductResultsInRecklessDamage]= useState(null);
+
 
   const [computerType, setComputerType] = useState(null);
   const [havePassword, setHavePassword] = useState(null);
@@ -125,6 +133,14 @@ function Solver() {
         intent_to_defraud: intentToDefraud,
         obtains_anything_of_value: obtainsAnythingOfValue,
         object_of_fraud_and_only_use_of_comp_obtained: objectOfFraudAndOnlyUseOfCompObtained,
+        value_of_use_greater_than_5k :valueOfUseGreaterThan5k,
+        knowingly_cases_trasnmission_of_code: knowinglyCausesTransmissionOfCode,
+        transmission_cases_damage_wo_auth_protected_comp: transmissionCausesDamageWithoutAuthOfProtectedComp,
+        intentionally_accesses_computer_wo_auth: intentionallyAccessCompWoAuth,
+        conduct_results_in_damage_and_loss: conductResultsInDamageAndLoss,
+        conduct_results_in_reckless_damage: conductResultsInRecklessDamage,
+        is_protected_computer: isProtectedComputer,
+
 
         first_num: intent,
         second_num: infoAccessed
@@ -193,13 +209,43 @@ function Solver() {
     if(e.target.value == "1"){
       setConductAffectsGovUse(true);
       setIsProtectedComputer(true);
-    } else {
+    } else if(e.target.value == "2"){
       setConductAffectsGovUse(false);
       setIsProtectedComputer(false);
+      setConductResultsInRecklessDamage(null);
+      setConductResultsInDamageAndLoss(null);
+
+    } else{
+      setConductAffectsGovUse(null);
+      setIsProtectedComputer(null);
+      setConductResultsInRecklessDamage(null);
+      setConductResultsInDamageAndLoss(null);
     }
   }
 
+  // <option value="1">Yes, it recklessly caused damage</option>
+  // <option value="2">Yes, it caused damage and loss</option>
+  // <option value="3">No</option>
   //question 5 handle
+  function handleCausedDamage(e){
+    if(e.target.value == "1"){
+      setConductResultsInRecklessDamage(true);
+      setConductResultsInDamageAndLoss(false);
+    } else if(e.target.value == "2"){
+      setConductResultsInRecklessDamage(false);
+      setConductResultsInDamageAndLoss(true);
+
+    } else if(e.target.value == "3"){
+      setConductResultsInRecklessDamage(false);
+      setConductResultsInDamageAndLoss(false);
+    } else{
+      setConductResultsInRecklessDamage(null);
+      setConductResultsInDamageAndLoss(null);
+
+    }
+  }
+
+  //question 6 handle
   function handleObtainedInfo(e){
     if(e.target.value == "1"){
       setObtainedInfo(true);
@@ -208,7 +254,7 @@ function Solver() {
     }
   }
 
-  //question 6 handle
+  //question 7 handle
   // <option value="1">Info required by statue or exec order to require protection</option>
   // <option value="2">Info that can be used to Injure US</option>
   // <option value="3">Info that can be used to advantage foreign nations</option>
@@ -282,56 +328,86 @@ function Solver() {
     }
   }
 
-  //question 7 handle
+  //question 8 handle
   function handleSharedInformation(e){
     if(e.target.value == "1"){
       setCommunicatesInfoToUnauthPerson(true);
-    } else if(e.target.vale == "2"){
+    } else if(e.target.value == "2"){
       setCommunicatesInfoToUnauthPerson(false);
     } else{
       setCommunicatesInfoToUnauthPerson(null);
     }
   }
 
-  //question 8 handle
+  //question 9 handle
   function handlePreventedInfoDelivery(e){
     if(e.target.value == "1"){
       setFailsToDeliverToUsEntity(true);
-    } else if(e.target.vale == "2"){
+    } else if(e.target.value == "2"){
       setFailsToDeliverToUsEntity(false);
     } else{
       setFailsToDeliverToUsEntity(null);
     }
   }
 
-  //question 9 handle
+  //question 10 handle
   function handleIntentToDefraud(e){
     if(e.target.value == "1"){
       setIntentToDefraud(true);
-    } else if(e.target.vale == "2"){
+    } else if(e.target.value == "2"){
       setIntentToDefraud(false);
-      //reliant questions
+      // questions reliant on fraud
       setObjectOfFraudAndOnlyUseOfCompObtained(null);
       setObtainsAnythingOfValue(null);
+      setValueOfUseGreaterThan5k(null);
 
     } else{
       setIntentToDefraud(null);
       setObjectOfFraudAndOnlyUseOfCompObtained(null);
       setObtainsAnythingOfValue(null);
+      setValueOfUseGreaterThan5k(null);
     }
   }
 
-  //question 10 handle
+  //question 11 handle
   function handleObtainsValue(e){
     if(e.target.value == "1"){
       setObtainsAnythingOfValue(true);
       setObjectOfFraudAndOnlyUseOfCompObtained(false);
-    } else if(e.target.vale == "2"){
-      setObtainsAnythingOfValue(false);
+      setValueOfUseGreaterThan5k(null);
+    } else if(e.target.value == "2"){
       setObjectOfFraudAndOnlyUseOfCompObtained(true);
+      setObtainsAnythingOfValue(false);
     } else{
       setObtainsAnythingOfValue(null);
       setObjectOfFraudAndOnlyUseOfCompObtained(null);
+      setValueOfUseGreaterThan5k(null);
+    }
+  }
+
+  //question 12 handle
+  function handleFraudUseMoreThan5k(e){
+    if(e.target.value == "1"){
+      setValueOfUseGreaterThan5k(true);
+    } else if(e.target.vale == "2"){
+      setValueOfUseGreaterThan5k(false);
+    } else{
+      setValueOfUseGreaterThan5k(null);
+    }
+  }
+
+
+  //question 13 handle
+  function handleTransmissionOfProgram(e){
+    if(e.target.value == "1"){
+      setKnowinglyCausesTransmissionOfCode(true);
+      setTransmissionCausesDamageWithoutAuthOfProtectedComp(true);
+    } else if(e.target.vale == "2"){
+      setKnowinglyCausesTransmissionOfCode(false);
+      setTransmissionCausesDamageWithoutAuthOfProtectedComp(false);
+    } else{
+      setKnowinglyCausesTransmissionOfCode(null);
+      setTransmissionCausesDamageWithoutAuthOfProtectedComp(null);
     }
   }
 
@@ -395,8 +471,9 @@ function Solver() {
               </ListGroup.Item>
 
             {/* what kind of computer did you access */}
+            {/* optional – did you access a computer??: */}
             {/* QUESTION 3 */}
-            <ListGroup.Item style={{backgroundColor: "gray"}}>
+            {(knowinglyAccessCompExceedingAuth || knowinglyAccessCompExceedingAuth) && <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> What kind of computer did you access? </span>
                 <div style={{float: "right"}}>
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}
@@ -410,7 +487,7 @@ function Solver() {
 
                   </Form.Select>
                 </div>
-              </ListGroup.Item>
+              </ListGroup.Item>}
 
 
               {/* (optional – only if it's a public computer)  */}
@@ -428,8 +505,24 @@ function Solver() {
                 </div>
               </ListGroup.Item>}
 
+              {/* (optional – only if it's a protected computer)  */}
+              {/*  did conduct cause damage */}
+              {/*  QUESTION 5 */}
+              {isProtectedComputer && (knowinglyAccessCompExceedingAuth || knowinglyAccessCompExceedingAuth) && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> In the computer you accessed, did your conduct cause damage?  </span>
+                <div style={{float: "right"}}>
+                  {/* NEED TO CHANGE VALUES TO SMT READABLE */}
+                  <Form.Select aria-label="Default select example" onChange = {handleCausedDamage}>
+                    <option>Select</option>
+                    <option value="1">Yes, it recklessly caused damage</option>
+                    <option value="2">Yes, it caused damage and loss</option>
+                    <option value="3">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
               {/* obtained any information? */}
-              {/* QUESTION 5 */}
+              {/* QUESTION 6 */}
               <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> Did you obtain information as a result of accessing the computer?  </span>
                 <div style={{float: "right"}}>
@@ -444,7 +537,7 @@ function Solver() {
 
               {/* OPTIONAL – only if obtained info */}
               {/* obtained any information? */}
-              {/* QUESTION 6 */}
+              {/* QUESTION 7 */}
               {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> What kind of information did you obtain (check boxes?)  </span>
                 <div style={{float: "right"}}>
@@ -463,7 +556,7 @@ function Solver() {
               </ListGroup.Item>}
 
               {/* OPTIONAL – only if inobtained info was shared  */}
-              {/* QUESTION 7 */}
+              {/* QUESTION 8 */}
              {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> Did you share the information with any unauthorized people?  </span>
                 <div style={{float: "right"}}>
@@ -478,7 +571,7 @@ function Solver() {
 
 
               {/* OPTIONAL – only if inobtained info was shared  */}
-              {/* QUESTION 8 */}
+              {/* QUESTION 9 */}
              {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> Did your actions prevent the delivery of information to a US entity?</span>
                 <div style={{float: "right"}}>
@@ -492,7 +585,7 @@ function Solver() {
               </ListGroup.Item>}
 
               {/* attempt to defraud when accessing computer */}
-              {/* QUESTION 9 */}
+              {/* QUESTION 10 */}
               <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> Did you have intent to commit fraud when accessing the computer? </span>
                 <div style={{float: "right"}}>
@@ -506,7 +599,7 @@ function Solver() {
               </ListGroup.Item>
 
               {/* OPTIONAL –obtain anything of monetary value through fraud */}
-              {/* QUESTION 10 */}
+              {/* QUESTION 11 */}
               {intentToDefraud && <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> Did you obtain anything of monetary value through the fraud? </span>
                 <div style={{float: "right"}}>
@@ -518,6 +611,36 @@ function Solver() {
                   </Form.Select>
                 </div>
               </ListGroup.Item>}
+
+              {/* OPTIONAL – value of fraud computer use more than $5k */}
+              {/* QUESTION 12 */}
+              {objectOfFraudAndOnlyUseOfCompObtained && <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Was the value of your computer use worth more than $5000? </span>
+                <div style={{float: "right"}}>
+                  {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handleFraudUseMoreThan5k}>
+                    <option>Select</option>
+                    <option value="1">Yes</option>
+                    <option value="2">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>}
+
+
+              {/* cause transmission of program, which caused damage*/}
+              {/* QUESTION 13 */}
+              <ListGroup.Item style={{backgroundColor: "gray"}}>
+                <span style={{float: "left"}}> Did you knowingly cause the transmission of a program, information, or code to a protected computer and did it cause damage?</span>
+                <div style={{float: "right"}}>
+                  {/* <Button> Select Options Here </Button> */}
+                  <Form.Select aria-label="Default select example" onChange = {handleTransmissionOfProgram}>
+                    <option>Select</option>
+                    {/* TO DO: CHECK THESE ANSWERS, do we want to pull out protected computer from here???? */}
+                    <option value="1">Yes </option>
+                    <option value="2">No</option>
+                  </Form.Select>
+                </div>
+              </ListGroup.Item>
 
 
               {/* fourth question */}
