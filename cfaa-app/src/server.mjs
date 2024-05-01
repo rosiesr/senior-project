@@ -25,9 +25,11 @@ app.post('/z3test', (req, res) => {
 
   const sourceFilePath = 'z3_translation/translation.smt-lib';
   const destinationFilePath = 'z3_translation/run.txt';
+  const unsatCoreFile = 'z3_translation/unsatRun.smt-lib';
   const input_data = req.body.input;
-  
+
   res.header("Access-Control-Allow-Origin", "*");
+
   console.log(input_data);
 
   //add the input data into the file we're going to run
@@ -225,39 +227,30 @@ app.post('/z3test', (req, res) => {
     }
   } 
 
-  //a22 --> intentionally accesses computer without authorization
-  if(input_data.intentionally_accesses_computer_wo_auth != null){
-    if(input_data.intentionally_accesses_computer_wo_auth == true){
-      appendAssertions+=`(assert (! IntentionallyAccessesComputerWithoutAuthorization :named a22))\n`;
-    } else{
-      appendAssertions+=`(assert (! (not IntentionallyAccessesComputerWithoutAuthorization) :named a22))\n`;
-    }
-  } 
-
-  //a23 --> conduct results in damage and loss
+  //a22 --> conduct results in damage and loss
   if(input_data.conduct_results_in_damage_and_loss != null){
     if(input_data.conduct_results_in_damage_and_loss == true){
-      appendAssertions+=`(assert (! ConductResultsInDamageAndLoss :named a23))\n`;
+      appendAssertions+=`(assert (! ConductResultsInDamageAndLoss :named a22))\n`;
     } else{
-      appendAssertions+=`(assert (! (not ConductResultsInDamageAndLoss) :named a23))\n`;
+      appendAssertions+=`(assert (! (not ConductResultsInDamageAndLoss) :named a22))\n`;
     }
   } 
 
-  //a24 --> conduct results in reckless damage
+  //a23 --> conduct results in reckless damage
   if(input_data.conduct_results_in_reckless_damage != null){
     if(input_data.conduct_results_in_reckless_damage == true){
-      appendAssertions+=`(assert (! ConductResultsInRecklessDamage :named a24))\n`;
+      appendAssertions+=`(assert (! ConductResultsInRecklessDamage :named a23))\n`;
     } else{
-      appendAssertions+=`(assert (! (not ConductResultsInRecklessDamage) :named a24))\n`;
+      appendAssertions+=`(assert (! (not ConductResultsInRecklessDamage) :named a23))\n`;
     }
   } 
 
-  //a25 --> is protected computer
+  //a24 --> is protected computer
   if(input_data.is_protected_computer != null){
     if(input_data.is_protected_computer == true){
-      appendAssertions+=`(assert (! IsProtectedComputer :named a25))\n`;
+      appendAssertions+=`(assert (! IsProtectedComputer :named a24))\n`;
     } else{
-      appendAssertions+=`(assert (! (not IsProtectedComputer) :named a25))\n`;
+      appendAssertions+=`(assert (! (not IsProtectedComputer) :named a24))\n`;
     }
   } 
 
@@ -265,12 +258,18 @@ app.post('/z3test', (req, res) => {
   appendAssertions+=`(check-sat)\n`;
   fs.appendFileSync(destinationFilePath, appendAssertions);
 
+  //second file to run unsat core with
+  fs.copyFileSync(sourceFilePath, unsatCoreFile);
+  //add get unsat core to new file
+  appendAssertions += '(get-unsat-core)\n';
+  fs.appendFileSync(unsatCoreFile, appendAssertions);
+  
 
   
   // run z3 script to check smt logic with given inputs
   const z3Process = spawn('z3',[destinationFilePath]);
   let stdoutData = '';
-  // use stdout of python process as json result
+
   z3Process.stdout.on('data', (data) => {
     stdoutData += data.toString();
     console.log(stdoutData);
@@ -285,32 +284,57 @@ app.post('/z3test', (req, res) => {
     console.log(`z3 process exited with code ${code}`);
     let sat = stdoutData.toString().split("\n")[0];
     // console.log(sat);
-    // let sat = stdoutData.toString();
 
     let response;
     if(sat == 'unsat'){
       console.log('returned unsat')
-      response = {output: false};
+      //we need to run it again? use the copied file with appended assertion
+      // response = {output: false};
+      runUnsatCore(res, unsatCoreFile);
     } else{
+      //just return, it's sat so we can't run unsat core
       console.log('returned sat')
       response = {output : true};
+      res.json(response);
     }
+    // this deletes the file --> probably no reason for that. if it's unsat, we run it again?
     // fs.unlinkSync(destinationFilePath);
-
-    // Return the stdout data as the response
-    res.json(response);
   });
 
-  // const output = { sum : sum};
-  // const response = JSON.parse(output.toString());
-  // res.json(output)
 
 });
+
+//function to 
+function runUnsatCore(res, inputFile) {
+  // Spawn the second process
+  const secondProcess = spawn('z3', [inputFile]);
+  let secondStdoutData = '';
+
+  // Use stdout of the second process as needed
+  secondProcess.stdout.on('data', (data) => {
+    secondStdoutData += data.toString();
+  });
+
+  secondProcess.stderr.on('data', (data) => {
+    console.error(`stderr from second process: ${data}`);
+  });
+
+  secondProcess.on('close', (code) => {
+    console.log(`Second process exited with code ${code}`);
+    let unsat_assertion = secondStdoutData.toString().split("\n")[1];
+    unsat_assertion = unsat_assertion.slice(1, unsat_assertion.length-1).split(" ");
+    unsat_assertion = unsat_assertion.slice(0, unsat_assertion.length-1);
+    console.log(unsat_assertion);
+    // Handle the output of the second process as needed
+    // Then return the response
+    res.json({ output: false, unsat_core: unsat_assertion });
+  });
+}
 
 
 //////////////////END MY Z3 FUNCTION ///////////////////
 
-
+//ALL TEST FUNCTIONS
 app.post('/check', (req, res) => {
   const input_data = req.body;
   res.send('hit the test endpoint!');

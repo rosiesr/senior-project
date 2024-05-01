@@ -59,17 +59,91 @@ function Solver() {
   const [transmissionCausesDamageWithoutAuthOfProtectedComp, setTransmissionCausesDamageWithoutAuthOfProtectedComp]= useState(null);
   const [conductResultsInDamageAndLoss, setConductResultsInDamageAndLoss]= useState(null);
   const [conductResultsInRecklessDamage, setConductResultsInRecklessDamage]= useState(null);
-
-
-  const [computerType, setComputerType] = useState(null);
-  const [havePassword, setHavePassword] = useState(null);
-  const [intent, setIntent] = useState(0)
-  const [infoAccessed, setInfoAccessed] = useState(0);
-
   
   useEffect(() => {
     console.log("Compliant updated:", compliant);
   }, [compliant]); // This useEffect will run whenever the 'compliant' state changes
+
+  //when it's unsat, this function will give us the specific assertions that are violated
+  function getNotCompliantAssertions(arr){
+    let assertionsStr = "The combination of the following actions in conjuction imply that you've broken the CFAA:\n";
+    if(arr.includes('a1')){
+      assertionsStr+= "-You cannot knowingly access a computer without authorization.\n";
+    }
+    if(arr.includes('a2')){
+      assertionsStr+= "-You cannot knowingly exceed authorized access to a computer.\n";
+    }
+    if(arr.includes('a3')){
+      assertionsStr+= "-You cannot access information that has been determined to require protection by the government.\n";
+    }
+    if(arr.includes('a4')){
+      assertionsStr+= "-You cannot access information that can be used to injure the United States.\n";
+    }
+    if(arr.includes('a5')){
+      assertionsStr+= "-You cannot access information that can be used to advantage a foreign nation. \n";
+    }
+    if(arr.includes('a6')){
+      assertionsStr+= "-You cannot communicate the obtained information with an unauthorized person.\n";
+    }
+    if(arr.includes('a7')){
+      assertionsStr+= "-Your actions resulted in important information failing to be delivered to a US entity. \n";
+    }
+    if(arr.includes('a8')){
+      assertionsStr+= "-You cannot access information that contains financial records of financial institutions.\n";
+    }
+    if(arr.includes('a9')){
+      assertionsStr+= "-You cannot access information contained in the File of a consumer reporting agency.\n";
+    }
+    if(arr.includes('a10')){
+      assertionsStr+= "-You cannot access information from a Protected Computer (see http://bit.ly/3wfNIwF).\n";
+    }
+    if(arr.includes('a11')){
+      assertionsStr+= "-You cannot access information from a US Department or Agency. \n";
+    }
+    if(arr.includes('a12')){
+      assertionsStr+= "-You cannot intentionally access a computer without authorization.\n";
+    }
+    if(arr.includes('a13')){
+      assertionsStr+= "-You cannot access a non-public computer of a US department or Agency.\n";
+    }
+    if(arr.includes('a14')){
+      assertionsStr+= "-You cannot access a computer exclusively for government use.\n";
+    }
+    if(arr.includes('a15')){
+      assertionsStr+= "-Your conduct affected the government/financial use of a computer.\n";
+    }
+    if(arr.includes('a16')){
+      assertionsStr+= "-You cannot intend to defraud someone using a computer.\n";
+    }
+    if(arr.includes('a17')){
+      assertionsStr+= "-You cannot obtain anything of monetary value from committing fraud.\n";
+    }
+    if(arr.includes('a18')){
+      assertionsStr+= "-You obtained the use of the computer through committing fraud.\n";
+    }
+    if(arr.includes('a19')){
+      assertionsStr+= "-You obtained more than $5000 worth of value through your computer use while committing fraud.\n";
+    }
+    if(arr.includes('a20')){
+      assertionsStr+= "-You knowingly caused the transmission of a program, code, or  information to a protected computer.\n";
+    }
+    if(arr.includes('a21')){
+      assertionsStr+= "-Your transmission of a program, code, or information without authorization of a protected computer caused damage.\n";
+    }
+    if(arr.includes('a22')){
+      assertionsStr+= "-Your conduct resulted in damage and loss.\n";
+    }
+    if(arr.includes('a23')){
+      assertionsStr+= "-Your conduct resulted in reckless damage.\n";
+    }
+    if(arr.includes('a24')){
+      assertionsStr+= "-You accessed a protected computer.\n";
+    }
+
+    return assertionsStr;
+  }
+
+
 
   const fetchDataAndUpdateCompliance = async (endpoint, input) => {
     try {
@@ -88,14 +162,27 @@ function Solver() {
       console.log("hit end point");
       console.log("endpoint returned: " );
       const jsonData = await response.json();
-      console.log(jsonData.output);
+      console.log(jsonData);
       setCompliance(jsonData.output);
       // update compliance and output :
       if(jsonData.output){
-        const comp_output = "The inputted situation is compliant with the CFAA.";
+        const comp_output = 
+          <>
+            <span style={{color: 'white'}}> The inputted situation is compliant with the CFAA. </span>
+          </>;
         setOutput(comp_output);
       } else{
-        const not_compliant = <span style={{color: 'red'}}> The inputted siutation is <strong>not</strong> compliant with the CFAA. </span>;
+        const assertions_broken = getNotCompliantAssertions(jsonData.unsat_core)
+        const not_compliant = 
+          <>
+            <span style={{color: 'red'}}> The inputted siutation <strong>breaks</strong> the CFAA. </span>
+            <br/>
+            <div> 
+              {assertions_broken.split('\n').map((assertion, index) => {
+                return <p key={index}>{assertion}</p>;
+              })}
+            </div>
+          </>;
         setOutput(not_compliant);
       }
 
@@ -136,14 +223,9 @@ function Solver() {
         value_of_use_greater_than_5k :valueOfUseGreaterThan5k,
         knowingly_cases_trasnmission_of_code: knowinglyCausesTransmissionOfCode,
         transmission_cases_damage_wo_auth_protected_comp: transmissionCausesDamageWithoutAuthOfProtectedComp,
-        intentionally_accesses_computer_wo_auth: intentionallyAccessCompWoAuth,
         conduct_results_in_damage_and_loss: conductResultsInDamageAndLoss,
         conduct_results_in_reckless_damage: conductResultsInRecklessDamage,
-        is_protected_computer: isProtectedComputer,
-
-
-        first_num: intent,
-        second_num: infoAccessed
+        is_protected_computer: isProtectedComputer
     };
 
     fetchDataAndUpdateCompliance(ENDPOINT, input_vals);
@@ -411,23 +493,7 @@ function Solver() {
     }
   }
 
-  //-------------------
-  function handleCompTypeChange(e){
-    setComputerType(e.target.value);
-  }
-
-  function handleHavePasswordChange(e){
-    setHavePassword(e.target.value);
-  }
-
-  function handleIntentChange(e){
-    setIntent(e.target.value);
-  }
-
-  function handleInfoAccessChange(e){
-    setInfoAccessed(e.target.value);
-  }
-  //------------------
+//-------------------
 
   return (
     <div className="App">
@@ -473,7 +539,7 @@ function Solver() {
             {/* what kind of computer did you access */}
             {/* optional – did you access a computer??: */}
             {/* QUESTION 3 */}
-            {(knowinglyAccessCompExceedingAuth || knowinglyAccessCompExceedingAuth) && <ListGroup.Item style={{backgroundColor: "gray"}}>
+            {(knowinglyAccessCompWoAuth || knowinglyAccessCompExceedingAuth) && <ListGroup.Item style={{backgroundColor: "gray"}}>
                 <span style={{float: "left"}}> What kind of computer did you access? </span>
                 <div style={{float: "right"}}>
                   {/* NEED TO CHANGE VALUES TO SMT READABLE */}

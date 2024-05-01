@@ -91,3 +91,4 @@
 
 (assert (! (not NotCompliant) :named notComp))
 (check-sat)
+(get-unsat-core)
