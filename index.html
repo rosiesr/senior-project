@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPSC 490 Rothschild </title>
+    <style>
+        body {
+            margin: 20px;
+            font-family: 'Arial', sans-serif; /* A more serious font choice */
+        }
+        h1, h2, p {
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            display: inline;
+            margin-right: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: blue; /* Change the link color as needed */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Using Predicate Logic and LLMs to Assess Compliance with the Computer Fraud and Abuse Act</h1>
+
+        <h3>Rosie Rothschild</h3>
+        <h3>Advisors: Professor Ruzica Piskac and Professor Scott Shapiro</h3>
+        <hr/>
+
+        <h2>Abstract</h2>
+
+        <p>This project builds upon existing methods to translate the Computer Fraud and
+            Abuse Act (CFAA) to predicate logic and creates a user-friendly GUI to interact with
+            the translation. The law can be difficult to understand, and current AI chatbot
+            solutions aren't always accurate; this solution uses formal verification to ensure that
+            the law is interpreted as precisely as possible. The translation was completed using a
+            combination of manual effort and LLMs. Then, the user could assert the details of a
+            particular situation to be appended to the translation, where I ran the Z3 algorithm
+            as an SMT solver to determine whether the given situation infringed on the CFAA. If
+            a situation broke the CFAA, I utilized the unsat-core function to determine which
+            assertions infringed upon the law so a user could understand why their conduct was
+            illegal. The Z3 processes ran locally using the command line and lived on a local
+            Node.js Express server, which could be reached using a POST request. I built the
+            sleek front-end design using the React.js framework. Much of the complexity in the
+            project stemmed from determining the specific questions to ask the user to obtain the
+            necessary information to run the appended situation without making assumptions or
+            becoming overly repetitive. After obtaining input from the user, it calls the Node.js
+            backend using a POST request, which returns whether the situation breaks the CFAA
+            and, if so, in what way. It's important to acknowledge that the translation doesn't
+            account for references outside the law nor subjective statements open to
+            interpretation. This project has broad implications, as it builds on the promise of
+            using formal verification to understand complex bodies of law and make them more
+            accessible.</p>
+
+        <ul>
+            <li><a href="files/490project_proposal.pdf">Project Proposal </a></li>
+            <li><a href="files/490final_report.pdf">TO DO!!!!!</a></li>
+            <li><a href="https://github.com/rosiesr/senior-project">Github (source code)</a></li>
+        </ul>
+    </div>
+
+</body>
+</html>

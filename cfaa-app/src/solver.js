@@ -66,7 +66,7 @@ function Solver() {
 
   //when it's unsat, this function will give us the specific assertions that are violated
   function getNotCompliantAssertions(arr){
-    let assertionsStr = "The combination of the following actions in conjuction imply that you've broken the CFAA:\n";
+    let assertionsStr = "The combination of the following actions in conjunction implies that you've broken the CFAA:\n";
     if(arr.includes('a1')){
       assertionsStr+= "-You cannot knowingly access a computer without authorization.\n";
     }
@@ -175,7 +175,7 @@ function Solver() {
         const assertions_broken = getNotCompliantAssertions(jsonData.unsat_core)
         const not_compliant = 
           <>
-            <span style={{color: 'red'}}> The inputted siutation <strong>breaks</strong> the CFAA. </span>
+            <span style={{color: 'red'}}> The inputted situation <strong>breaks</strong> the CFAA. </span>
             <br/>
             <div> 
               {assertions_broken.split('\n').map((assertion, index) => {
@@ -639,7 +639,7 @@ function Solver() {
               {/* OPTIONAL – only if inobtained info was shared  */}
               {/* QUESTION 9 */}
              {obtainedInfo && <ListGroup.Item style={{backgroundColor: "gray"}}>
-                <span style={{float: "left"}}> Did your actions prevent the delivery of information to a US entity?</span>
+                <span style={{float: "left"}}> Did your actions prevent the information delivery to a US entity?</span>
                 <div style={{float: "right"}}>
                   {/* <Button> Select Options Here </Button> */}
                   <Form.Select aria-label="Default select example" onChange = {handlePreventedInfoDelivery}>

@@ -1,0 +1,8 @@
+(assert (forall ((x Int)) (=> (and (or (KnowinglyAccessesComputerWithoutAuthorization x) (ExceedsAuthorizedAccess x)) (ObtainsRestrictedInformation x)))))
+
+(assert (forall ((x Int)) (=> (ObtainsRestrictedInformation x) (and (InformationRequiresProtection x) (or (InformationCanBeUsedToInjureUS x) (InformationCanBeUsedToInjureForeignNation x))))))
+
+(assert (forall ((x Int)) (=> (and (ObtainsRestrictedInformation x) (CommunicatesInformationToUnauthorizedPerson x)) (not (RetainsInformationWithoutAuthorization x)))))
+
+(assert (forall ((x Int)) (=> (RetainsInformationWithoutAuthorization x) (OfficerOrEmployeeEntitledToReceive x))))
+
