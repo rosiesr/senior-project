@@ -89,6 +89,15 @@
 (assert (=> (and IntentToExtortTransmitsInInterstateCommunication ContainsThreatOrExtotion) NotCompliant))
 
 
+(assert (! KnowinglyAccessesComputerWithoutAuthorization :named a1))
+(assert (! (not KnowinglyAccessesComputerExceedingAuthorization) :named a2))
+(assert (! InformationDeterminedToRequireProtection :named a3))
+(assert (! InformationFromProtectedComputer :named a10))
+(assert (! IntentionallyAccessesComputerWithoutAuthorization :named a12))
+(assert (! (not NonpublicComputerOfUSDepartmentOrAgency) :named a13))
+(assert (! (not ComputerExclusivelyForGovernmentUse) :named a14))
+(assert (! ConductAffectsGovernmentUse :named a15))
+(assert (! IsProtectedComputer :named a24))
 (assert (! (not NotCompliant) :named notComp))
 (check-sat)
 (get-unsat-core)

@@ -499,7 +499,7 @@ function Solver() {
     <div className="App">
       <div className="App-header" style={{margin: "16px"}}>
         <h1>
-          Computer Fraud and Abuse Act SMT Solver
+          Computer Fraud and Abuse Act Tool Using An SMT Solver
         </h1>
         <p style={{fontSize: "12pt"}}> Congress enacted the CFAA in 1986 to federally prosecute crimes of hacking. The law has been amended 6 times to broaden its scope. This tool
           can help users better understand what actions are legal under the law.
